@@ -828,6 +828,7 @@ GEM
       activesupport
       nokogiri
       xml-simple
+    sorbet-runtime (0.5.10796)
     sparql (3.1.8)
       builder (~> 3.2)
       ebnf (~> 2.1)
@@ -904,6 +905,8 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    workos (2.13.0)
+      sorbet-runtime (~> 0.5)
     xml-simple (1.1.9)
       rexml
     xpath (3.2.0)
@@ -950,6 +953,7 @@ DEPENDENCIES
   web-console (~> 3.7)
   webdrivers (~> 4.0)
   webmock (~> 3.14)
+  workos (~> 2.13)
 
 BUNDLED WITH
    2.1.4
