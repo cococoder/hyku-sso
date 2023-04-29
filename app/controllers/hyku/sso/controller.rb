@@ -5,11 +5,11 @@ module Hyku
       before_action :set_account, only: :callback
 
       def auth
-        redirect_to HykuAddons::Sso::AuthService.new(host: request.host).generate_authorisation_url
+        redirect_to Sso::AuthService.new(host: request.host).generate_authorisation_url
       end
 
       def callback
-        service = HykuAddons::Sso::CallBackService.new(code: params[:code])
+        service = Sso::CallBackService.new(code: params[:code])
 
         handled = false
 
@@ -28,7 +28,7 @@ module Hyku
 
         end
 
-        raise HykuAddons::Sso::Error, "Failed to handle workos code #{params[:code]}" unless handled
+        raise Sso::Error, "Failed to handle workos code #{params[:code]}" unless handled
 
         redirect_to "/dashboard"
         # Use the information in `profile` for further business logic.
