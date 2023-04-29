@@ -4,40 +4,18 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'hyrax-autopopulation'
+gem 'hyku-sso'
 ```
 
 And then execute:
 ```bash
-$ bundle exec rails g hyrax:autopopulation:install
+$ bundle exec rails g hyku:sso:install
 ```
 
 Or install it yourself as:
 ```bash
-$ gem install hyrax-autopopulation
+$ gem install hyku-sso
 ```
-
-For Hyrax engine.rb does the include but if you are using Hyku or HykuAddons then include the module below into the files shown in order
-to add the property :autopopulation_status:
-````ruby
- include Hyrax::Autopopulation::AutopopulationProperty
-````
-
-into the following files:
-
-https://github.com/ubiquitypress/hyku_addons/blob/main/app/models/concerns/hyku_addons/work_base.rb
-
-https://github.com/ubiquitypress/hyku_addons/blob/main/app/models/concerns/hyku_addons/schema/work_base.rb
-
-Also for Hyku & HykuAddons users only include:
-
-```ruby
-  include Hyrax::Autopopulation::SolrDocumentBehavior
-```
-
-https://github.com/ubiquitypress/hyku_addons/blob/main/app/models/concerns/hyku_addons/solr_document_behavior.rb
-
-## Development
 
 When cloning, you will need to bring in the Hyrax submodule by:
 
