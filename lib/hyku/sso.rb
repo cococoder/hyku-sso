@@ -1,45 +1,81 @@
 # frozen_string_literal: true
+require "workos"
+require "securerandom"
+require "ostruct"
 require "Hyku/sso/engine"
 require "Hyku/sso/configuration"
 
 module Hyku
   module Sso
     class << self
-      attr_writer :configuration
+      # Initialization of workos
+      def initialize
+        WorkOS.configure do |config|
+          config.key = configuration.api_key
+          config.timeout = 120
+        end
+      end
+
+      # Instantiate the Configuration singleton
+      # or return it. Remember that the instance
+      # has attribute readers so that we can access
+      # the configured values
+      def configuration
+        @configuration ||= OpenStruct.new
+      end
+
+      # This is the configure block definition.
+      # The configuration method will return the
+      # Configuration singleton, which is then yielded
+      # to the configure block. Then it's just a matter
+      # of using the attribute accessors we previously defined
+      def configure
+        configuration.api_key = ENV["WORKOS_API_KEY"]
+        configuration.client_id = ENV["WORKOS_CLIENT_ID"]
+        configuration.organisation_id = ENV["ORGANISATION_ID"]
+        initialize
+        yield(configuration)
+      end
+    end
+    class Error < StandardError; end
+
+    # The auth service is responsbible for generating the workos redirect url.
+    class AuthService
+      def initialize(host:)
+        @host = host
+      end
+
+      def generate_authorisation_url
+        # The callback URI WorkOS should redirect to after the authentication
+        redirect_uri = "https://#{@host}/sso/callback"
+
+        account = Account.find_by cname: @host
+          
+        WorkOS::SSO.authorization_url(
+          client_id: Sso.configuration.client_id,
+          organization: account.nil? ? Sso.configuration.work_os_orgntion : account.work_os_orgnaisation,
+          redirect_uri: redirect_uri
+        )
+      end
     end
 
-    # Note Hyku::Sso::Config is set in the rails engine initializer
-    # Usage
-    # Assumming you want to access storage_type
-    # You can either use
-    # Hyku::Sso.configuration.storage_type
-    #
-    # ======   or use ========
-    #
-    # config = Rails.application.config.Hyku_Sso
-    # config.storage_type
-    #
-    def self.configuration
-      @configuration = Rails.application.config.Hyku_Sso
-    end
+    # The call back service handles the repsose back from workos
+    class CallBackService
+      def initialize(code:)
+        @code = code
+      end
 
-    # Resets to using defaults value
-    def self.reset
-      Rails.application.config.Hyku_Sso = Configuration.new
-    end
+      def handle
+        profile_and_token = WorkOS::SSO.profile_and_token(
+          code: @code,
+          client_id: Sso.configuration.client_id
+        )
 
-    #  Exposes Hyku Autopopulaton configuration
-    # @yield [Hyku::Sso::Configuration] if a block is passed
-    #
-    #  Usage
-    #  Hyku::Sso.configure do |config|
-    #    config.is_Hyku_orcid_installed = true
-    #  end
-    #
-    # Note Hyku::Sso::Config is set in the rails engine initializer
-    #
-    def self.configure
-      yield(Rails.application.config.Hyku_Sso)
+        password = SecureRandom.hex(10)
+        profile = profile_and_token.profile
+
+        yield(profile, password) if block_given?
+      end
     end
   end
 end
