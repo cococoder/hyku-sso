@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rails", "~> 5.2.6"
   spec.add_dependency "hyrax", "~> 2.9"
   spec.add_dependency "flipflop", "~> 2.6"
+  spec.add_dependency "workos", "~> 2.10"
   
 
   spec.add_development_dependency "sqlite3", "~> 1.4.2"
