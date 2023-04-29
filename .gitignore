@@ -13,7 +13,7 @@ coverage/
 tmp/
 # rspec failure tracking
 .rspec_status
-config/initializers/hyrax/autopopulation/configure.rb
+config/initializers/hyku/sso/configure.rb
 core
 config/definitions.rb
 .env.*
